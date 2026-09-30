@@ -34,8 +34,8 @@ function rangeeEtage(etage = { name: "", source: "", itemField: "" }) {
     const rangee = document.createElement("div")
     rangee.className = "rangee-etage"
     const champs = [
-        { cle: "name", texte: "Nom de l'etage", valeur: etage.name, exemple: "rerank" },
-        { cle: "source", texte: "Evenement ou chemin", valeur: etage.source, exemple: "sources" },
+        { cle: "name", texte: "Nom de l'étage", valeur: etage.name, exemple: "rerank" },
+        { cle: "source", texte: "Événement ou chemin", valeur: etage.source, exemple: "sources" },
         { cle: "itemField", texte: "Champ", valeur: etage.itemField || "", exemple: "code" },
     ]
     for (const champ of champs) {
@@ -186,7 +186,7 @@ function ecrireConnecteur(connecteur) {
 
 function majLibellesMode() {
     const flux = element("mode").value === "sse"
-    element("label-texte-source").textContent = flux ? "Evenement du texte" : "Chemin du texte"
+    element("label-texte-source").textContent = flux ? "Événement du texte" : "Chemin du texte"
     element("texte-champ").parentElement.style.display = flux ? "" : "none"
 }
 
@@ -227,12 +227,12 @@ function afficherRapports() {
     conteneur.textContent = ""
     if (!etat.reports.length) {
         conteneur.append(Object.assign(document.createElement("p"), {
-            className: "discret", textContent: "aucune mesure enregistree pour l'instant",
+            className: "discret", textContent: "aucune mesure enregistrée pour l'instant",
         }))
         return
     }
     const table = document.createElement("table")
-    table.append(enTete(["rapport", "date", "reussis"]))
+    table.append(enTete(["rapport", "date", "réussis"]))
     for (const rapport of etat.reports) {
         const ligne = document.createElement("tr")
         ligne.append(
@@ -251,7 +251,7 @@ function conteneurCliquable(ligne, rapport) {
     ligne.addEventListener("click", () => {
         etat.dernierRapport = rapport.name
         afficherMesures(rapport.summary)
-        afficherAvis("avis-mesure", `rapport « ${rapport.name} » charge`, "info")
+        afficherAvis("avis-mesure", `rapport « ${rapport.name} » chargé`, "info")
     })
 }
 
@@ -275,7 +275,7 @@ function cellule(contenu, classe = "") {
 // ------------------------------------------------------------------ resultats
 
 const POURCENTAGES = {
-    citedRelevant: "document cite",
+    citedRelevant: "document cité",
     mustIncludeSatisfied: "valeur attendue",
     refusalCorrect: "refus corrects",
     noForbiddenValue: "aucune valeur interdite",
@@ -287,9 +287,9 @@ function afficherMesures(resume) {
     if (!resume) return
 
     const mesures = [
-        { nom: "cas reussis", valeur: `${resume.passed}/${resume.casesTotal}` },
+        { nom: "cas réussis", valeur: `${resume.passed}/${resume.casesTotal}` },
         ...Object.entries(resume.recallByStage || {}).map(([nom, valeur]) => ({
-            nom: `trouve apres « ${nom} »`, valeur: `${(valeur * 100).toFixed(1)} %`,
+            nom: `trouvé après « ${nom} »`, valeur: `${(valeur * 100).toFixed(1)} %`,
         })),
         { nom: "MRR", valeur: resume.meanReciprocalRank.toFixed(3) },
         { nom: "nDCG", valeur: resume.normalisedDiscountedGain.toFixed(3) },
@@ -298,7 +298,7 @@ function afficherMesures(resume) {
         })),
     ]
     if (resume.usage && resume.usage.estimatedCostUsd) {
-        mesures.push({ nom: "cout mesure", valeur: `${resume.usage.estimatedCostUsd.toFixed(3)} $` })
+        mesures.push({ nom: "coût mesuré", valeur: `${resume.usage.estimatedCostUsd.toFixed(3)} $` })
     }
 
     for (const mesure of mesures) {
@@ -344,7 +344,7 @@ async function deposer(fichier) {
         afficherAvis(
             "avis-jeu",
             `${resultat.total} cas lus, dont ${resultat.refusals} cas de refus.` +
-                (sansValeur ? ` ${sansValeur} cas n'attendent aucune valeur : seule la recuperation y sera notee.` : ""),
+                (sansValeur ? ` ${sansValeur} cas n'attendent aucune valeur : seule la récupération y sera notée.` : ""),
             "info",
         )
         afficherApercu(resultat.preview)
@@ -375,7 +375,7 @@ async function lancer() {
     const connecteur = element("connecteur").value
     const jeu = element("jeu").value
     if (!connecteur || !jeu) {
-        afficherAvis("avis-mesure", "choisissez un jeu de questions et un connecteur enregistre")
+        afficherAvis("avis-mesure", "choisissez un jeu de questions et un connecteur enregistré")
         return
     }
     element("lancer").disabled = true
@@ -407,7 +407,7 @@ async function lancer() {
         const donnees = JSON.parse(evenement.data)
         etat.dernierRapport = donnees.report
         afficherMesures(donnees.summary)
-        afficherAvis("avis-mesure", `mesure terminee, rapport « ${donnees.report} »`, "info")
+        afficherAvis("avis-mesure", `mesure terminée, rapport « ${donnees.report} »`, "info")
         element("lancer").disabled = false
         flux.close()
         await rafraichir()
@@ -422,7 +422,7 @@ async function lancer() {
 
 async function renoter() {
     if (!etat.dernierRapport) {
-        afficherAvis("avis-mesure", "aucun rapport a renoter : lancez d'abord une mesure")
+        afficherAvis("avis-mesure", "aucun rapport à renoter : lancez d'abord une mesure")
         return
     }
     try {
@@ -432,7 +432,7 @@ async function renoter() {
             body: JSON.stringify({ report: etat.dernierRapport, cases: element("jeu").value }),
         })
         afficherMesures(resultat.summary)
-        afficherAvis("avis-mesure", "renote sans aucun appel au systeme, donc sans cout", "info")
+        afficherAvis("avis-mesure", "renoté sans aucun appel au système, donc sans coût", "info")
     } catch (erreurRenotation) {
         afficherAvis("avis-mesure", erreurRenotation.message)
     }
@@ -478,9 +478,9 @@ element("sorte").addEventListener("change", majSorte)
 element("enregistrer").addEventListener("click", async () => {
     try {
         const connecteur = lireDeclaration()
-        if (!connecteur.name) throw new Error("un nom est necessaire")
+        if (!connecteur.name) throw new Error("un nom est nécessaire")
         if (connecteur.kind === "vector" ? !connecteur.databaseUrl : !connecteur.url) {
-            throw new Error("une URL est necessaire")
+            throw new Error("une URL est nécessaire")
         }
         await appeler("/api/connectors", {
             method: "POST",
@@ -489,7 +489,7 @@ element("enregistrer").addEventListener("click", async () => {
         })
         await rafraichir()
         element("connecteur").value = connecteur.name
-        afficherAvis("avis-connecteur", "connecteur enregistre", "info")
+        afficherAvis("avis-connecteur", "connecteur enregistré", "info")
     } catch (erreurEnregistrement) {
         afficherAvis("avis-connecteur", erreurEnregistrement.message)
     }
@@ -500,7 +500,7 @@ element("supprimer").addEventListener("click", async () => {
     if (!nom) return
     await fetch(`/api/connectors/${encodeURIComponent(nom)}`, { method: "DELETE" })
     await rafraichir()
-    afficherAvis("avis-connecteur", "connecteur supprime", "info")
+    afficherAvis("avis-connecteur", "connecteur supprimé", "info")
 })
 
 element("tester").addEventListener("click", async () => {
@@ -513,7 +513,7 @@ element("tester").addEventListener("click", async () => {
         const apercu = element("apercu").querySelector("td + td")
         if (apercu) question = apercu.textContent.replace(/…$/, "")
     }
-    const saisie = window.prompt("Question a envoyer au systeme :", question)
+    const saisie = window.prompt("Question à envoyer au système :", question)
     if (!saisie) return
     try {
         const resultat = await appeler("/api/connectors/test", {
@@ -526,7 +526,7 @@ element("tester").addEventListener("click", async () => {
         const etages = resultat.stages
             .map((etage) => `${etage.name} : ${etage.documentIdentifiers.join(", ") || "(vide)"}`)
             .join(" | ")
-        bloc.textContent = `${etages || "aucun etage detecte"} — reponse de ${resultat.text.length} caracteres`
+        bloc.textContent = `${etages || "aucun étage détecté"} — réponse de ${resultat.text.length} caractères`
         const extrait = document.createElement("pre")
         extrait.className = "mono"
         extrait.style.whiteSpace = "pre-wrap"

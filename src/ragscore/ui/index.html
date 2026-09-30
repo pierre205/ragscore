@@ -94,7 +94,7 @@ summary { cursor: pointer; color: var(--discret); font-size: 13px; }
 
 <header>
     <h1>ragscore</h1>
-    <p class="sous-titre">Mesurer un systeme RAG au lieu de l'affirmer bon. <span class="chemin" id="racine"></span></p>
+    <p class="sous-titre">Mesurer un système RAG au lieu de l'affirmer bon. <span class="chemin" id="racine"></span></p>
 </header>
 
 <div class="grille">
@@ -102,26 +102,26 @@ summary { cursor: pointer; color: var(--discret); font-size: 13px; }
 <section>
     <h2>1. Jeu de questions</h2>
     <div id="depot">
-        Deposez un fichier <strong>.jsonl</strong>, <strong>.csv</strong> ou <strong>.json</strong>,
+        Déposez un fichier <strong>.jsonl</strong>, <strong>.csv</strong> ou <strong>.json</strong>,
         ou cliquez pour le choisir.
         <div class="discret" style="margin-top:6px">Colonnes reconnues : question, relevant_ids, must_include, must_not_include, category</div>
     </div>
     <input type="file" id="fichier" accept=".jsonl,.csv,.json" hidden>
-    <label for="jeu">Jeux enregistres</label>
+    <label for="jeu">Jeux enregistrés</label>
     <select id="jeu"></select>
     <div id="avis-jeu"></div>
     <div id="apercu"></div>
 </section>
 
 <section>
-    <h2>2. Systeme a mesurer</h2>
-    <label for="connecteur">Systemes enregistres</label>
+    <h2>2. Système à mesurer</h2>
+    <label for="connecteur">Systèmes enregistrés</label>
     <select id="connecteur"></select>
 
-    <label for="sorte">Sorte de systeme</label>
+    <label for="sorte">Sorte de système</label>
     <select id="sorte">
-        <option value="http">API a brancher — mesure le produit que vous livrez</option>
-        <option value="vector">Moteur integre — mesure une approche, sans application</option>
+        <option value="http">API à brancher — mesure le produit que vous livrez</option>
+        <option value="vector">Moteur intégré — mesure une approche, sans application</option>
     </select>
 
     <label for="nom">Nom</label>
@@ -130,7 +130,7 @@ summary { cursor: pointer; color: var(--discret); font-size: 13px; }
     <div id="formulaire-http">
     <div class="rangee-etage" style="grid-template-columns: 90px 1fr 110px;">
         <div>
-            <label for="methode">Methode</label>
+            <label for="methode">Méthode</label>
             <select id="methode"><option>POST</option><option>GET</option></select>
         </div>
         <div>
@@ -138,17 +138,17 @@ summary { cursor: pointer; color: var(--discret); font-size: 13px; }
             <input id="url" placeholder="http://127.0.0.1:3000/api/chat">
         </div>
         <div>
-            <label for="mode">Reponse</label>
+            <label for="mode">Réponse</label>
             <select id="mode"><option value="sse">flux SSE</option><option value="json">JSON</option></select>
         </div>
     </div>
 
-    <label for="corps">Corps de la requete <span class="discret">— {{question}} est remplace</span></label>
+    <label for="corps">Corps de la requête <span class="discret">— {{question}} est remplacé</span></label>
     <textarea id="corps">{"question": "{{question}}"}</textarea>
 
     <div class="rangee-etage" style="grid-template-columns: 1fr 1fr;">
         <div>
-            <label for="texte-source" id="label-texte-source">Evenement du texte</label>
+            <label for="texte-source" id="label-texte-source">Événement du texte</label>
             <input id="texte-source" value="text">
         </div>
         <div>
@@ -157,17 +157,17 @@ summary { cursor: pointer; color: var(--discret); font-size: 13px; }
         </div>
     </div>
 
-    <label>Etages de recuperation <span class="discret">— dans l'ordre applique par le systeme</span></label>
+    <label>Étages de récupération <span class="discret">— dans l'ordre appliqué par le système</span></label>
     <div id="etages"></div>
-    <button id="ajouter-etage" type="button" style="margin-top:8px">Ajouter un etage</button>
+    <button id="ajouter-etage" type="button" style="margin-top:8px">Ajouter un étage</button>
 
     <details>
-        <summary>Connexion prealable et consommation</summary>
+        <summary>Connexion préalable et consommation</summary>
         <label for="auth-url">URL de connexion <span class="discret">— vide si aucune</span></label>
         <input id="auth-url" placeholder="http://127.0.0.1:3000/api/auth/connexion">
         <label for="auth-corps">Corps de la connexion <span class="discret">— utilisez {{env:NOM}}, jamais un mot de passe en clair</span></label>
         <textarea id="auth-corps">{"email": "{{env:EVALUATION_EMAIL}}", "password": "{{env:EVALUATION_PASSWORD}}"}</textarea>
-        <label for="usage-source">Evenement ou chemin de la consommation</label>
+        <label for="usage-source">Événement ou chemin de la consommation</label>
         <input id="usage-source" value="done">
     </details>
     </div>
@@ -185,30 +185,30 @@ summary { cursor: pointer; color: var(--discret); font-size: 13px; }
         </div>
 
         <div class="rangee-etage" style="grid-template-columns: 1fr 1fr 1fr;">
-            <div><label for="limite">Candidats cherches</label><input id="limite" type="number" value="40"></div>
-            <div><label for="garde">Gardes apres rerank</label><input id="garde" type="number" value="8"></div>
-            <div><label for="passages">Passages envoyes</label><input id="passages" type="number" value="14"></div>
+            <div><label for="limite">Candidats cherchés</label><input id="limite" type="number" value="40"></div>
+            <div><label for="garde">Gardés après rerank</label><input id="garde" type="number" value="8"></div>
+            <div><label for="passages">Passages envoyés</label><input id="passages" type="number" value="14"></div>
         </div>
 
         <div class="rangee-etage" style="grid-template-columns: 1fr 1fr 1fr;">
             <div><label for="modele-embed">Embeddings</label><input id="modele-embed" value="voyage-3.5"></div>
             <div><label for="modele-rerank">Reclassement</label><input id="modele-rerank" value="rerank-2.5"></div>
-            <div><label for="modele-gen">Generation</label><input id="modele-gen" value="claude-sonnet-5"></div>
+            <div><label for="modele-gen">Génération</label><input id="modele-gen" value="claude-sonnet-5"></div>
         </div>
 
-        <label for="cle-voyage">Cles</label>
+        <label for="cle-voyage">Clés</label>
         <div class="rangee-etage" style="grid-template-columns: 1fr 1fr;">
             <div><input id="cle-voyage" value="{{env:VOYAGE_API_KEY}}"></div>
             <div><input id="cle-anthropic" value="{{env:ANTHROPIC_API_KEY}}"></div>
         </div>
 
-        <label for="invite">Consigne donnee au modele
-            <span class="discret">— elle decide du refus et de la citation, donc du score</span></label>
+        <label for="invite">Consigne donnée au modèle
+            <span class="discret">— elle décide du refus et de la citation, donc du score</span></label>
         <textarea id="invite" style="min-height:96px"></textarea>
 
         <div class="avis info" style="margin-top:14px">
             Ce moteur mesure une approche, pas votre produit. Un rapport qui en sort ne doit pas
-            etre presente comme la mesure de l'application livree.
+            être présenté comme la mesure de l'application livrée.
         </div>
     </div>
 
@@ -237,7 +237,7 @@ summary { cursor: pointer; color: var(--discret); font-size: 13px; }
     <div id="detail" class="defilant"></div>
 
     <details id="bloc-rapports">
-        <summary>Rapports precedents</summary>
+        <summary>Rapports précédents</summary>
         <div id="rapports"></div>
     </details>
 </section>
