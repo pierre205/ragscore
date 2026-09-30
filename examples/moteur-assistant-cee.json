@@ -1,0 +1,23 @@
+{
+  "kind": "vector",
+  "name": "CEE, moteur integre",
+  "databaseUrl": "{{env:DATABASE_URL}}",
+  "table": "chunk",
+  "fromClause": "chunk JOIN document ON document.id = chunk.documentid",
+  "identifierColumn": "document.code",
+  "textColumn": "chunk.content",
+  "embeddingColumn": "chunk.embedding",
+  "whereClause": "document.code IS NOT NULL",
+  "searchLimit": 40,
+  "rerankKeep": 8,
+  "maxPassages": 14,
+  "embeddingModel": "voyage-3.5",
+  "rerankModel": "rerank-2.5",
+  "generationModel": "claude-sonnet-5",
+  "maxOutputTokens": 2000,
+  "systemPrompt": "Tu reponds a partir des seuls extraits fournis.\nCite systematiquement l'identifiant du document dont vient chaque information.\nSi les extraits ne contiennent pas la reponse, dis-le clairement et ne l'invente pas.",
+  "voyageApiKey": "{{env:VOYAGE_API_KEY}}",
+  "anthropicApiKey": "{{env:ANTHROPIC_API_KEY}}",
+  "inputPricePerMillion": 2.0,
+  "outputPricePerMillion": 10.0
+}

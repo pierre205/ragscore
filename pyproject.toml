@@ -1,0 +1,52 @@
+[project]
+name = "ragscore"
+version = "0.1.0"
+description = "Harnais de mesure pour systemes RAG : recuperation et generation notees separement"
+requires-python = ">=3.12"
+license = "MIT"
+dependencies = [
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+# L'interface est optionnelle : le harnais s'utilise en bibliotheque sans elle.
+ui = [
+    "starlette>=0.48",
+    "uvicorn>=0.38",
+]
+# Le moteur integre : mesurer un corpus vectorise sans application a brancher.
+engine = [
+    "psycopg[binary]>=3.3",
+    "pgvector>=0.5",
+    "voyageai>=0.5",
+    "anthropic>=1.5",
+]
+# Regeneration de la documentation PDF, versionnee dans docs/.
+docs = [
+    "reportlab>=4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+[project.scripts]
+ragscore = "ragscore.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ragscore"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/ragscore/ui" = "ragscore/ui"
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

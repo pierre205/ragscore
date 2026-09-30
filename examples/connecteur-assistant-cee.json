@@ -1,0 +1,24 @@
+{
+  "name": "assistant CEE (local)",
+  "url": "http://127.0.0.1:3000/api/chat",
+  "mode": "sse",
+  "method": "POST",
+  "headers": {},
+  "body": {"question": "{{question}}", "debug": true},
+  "textSource": "text",
+  "textField": "delta",
+  "stages": [
+    {"name": "candidats", "source": "candidates", "itemField": null, "payloadPath": ""},
+    {"name": "rerank", "source": "sources", "itemField": "code", "payloadPath": ""}
+  ],
+  "usage": {"source": "done", "inputTokensPath": "inputTokens", "outputTokensPath": "outputTokens", "costPath": "estimatedCostUsd"},
+  "authentication": {
+    "url": "http://127.0.0.1:3000/api/auth/connexion",
+    "method": "POST",
+    "body": {"email": "{{env:EVALUATION_EMAIL}}", "password": "{{env:EVALUATION_PASSWORD}}"},
+    "headers": {}
+  },
+  "timeoutSeconds": 180,
+  "errorSource": "error",
+  "errorMessagePath": "message"
+}

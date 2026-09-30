@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ragscore</title>
+<style>
+:root {
+    color-scheme: light dark;
+    --fond: #fbfbfa;
+    --surface: #ffffff;
+    --bord: #e3e1dc;
+    --texte: #1d1c1a;
+    --discret: #6b6862;
+    --accent: #12805c;
+    --accent-doux: #e6f4ee;
+    --echec: #b3261e;
+    --echec-doux: #fbeae9;
+    --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --fond: #18181a;
+        --surface: #202023;
+        --bord: #34343a;
+        --texte: #ececeb;
+        --discret: #a0a09a;
+        --accent: #5fd3a5;
+        --accent-doux: #14312a;
+        --echec: #f2837b;
+        --echec-doux: #35211f;
+    }
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 0 16px 64px;
+    background: var(--fond);
+    color: var(--texte);
+    font: 14px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.enveloppe { max-width: 1080px; margin: 0 auto; }
+header { padding-block: 28px 20px; border-bottom: 1px solid var(--bord); margin-bottom: 24px; }
+h1 { font-size: 20px; margin: 0 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--discret); margin: 0 0 12px; }
+.sous-titre { color: var(--discret); margin: 0; }
+.chemin { font-family: var(--mono); font-size: 12px; color: var(--discret); }
+section { background: var(--surface); border: 1px solid var(--bord); border-radius: 10px; padding: 20px; margin-bottom: 18px; }
+.grille { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }
+@media (max-width: 860px) { .grille { grid-template-columns: 1fr; } }
+label { display: block; font-size: 12px; color: var(--discret); margin: 12px 0 4px; }
+input, select, textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--bord); border-radius: 7px;
+    background: var(--fond); color: var(--texte); font: inherit;
+}
+textarea { font-family: var(--mono); font-size: 12px; min-height: 76px; resize: vertical; }
+button {
+    padding: 9px 16px; border-radius: 7px; border: 1px solid var(--bord);
+    background: var(--surface); color: var(--texte); font: inherit; cursor: pointer;
+}
+button.principal { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+.boutons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; align-items: center; }
+#depot {
+    border: 2px dashed var(--bord); border-radius: 10px; padding: 28px 20px; text-align: center;
+    color: var(--discret); cursor: pointer; transition: border-color .15s, background .15s;
+}
+#depot.survol { border-color: var(--accent); background: var(--accent-doux); color: var(--texte); }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--bord); font-size: 13px; vertical-align: top; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--discret); font-weight: 600; }
+td.mono, .mono { font-family: var(--mono); font-size: 12px; }
+.pastille { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.ok { background: var(--accent-doux); color: var(--accent); }
+.ko { background: var(--echec-doux); color: var(--echec); }
+.jauge { height: 6px; border-radius: 99px; background: var(--bord); overflow: hidden; margin: 14px 0 6px; }
+.jauge div { height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+.avis { padding: 10px 12px; border-radius: 7px; font-size: 13px; margin-top: 12px; }
+.avis.erreur { background: var(--echec-doux); color: var(--echec); }
+.avis.info { background: var(--accent-doux); color: var(--accent); }
+.mesures { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+.mesure { border: 1px solid var(--bord); border-radius: 8px; padding: 12px; }
+.mesure .valeur { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+.mesure .nom { font-size: 11px; color: var(--discret); text-transform: uppercase; letter-spacing: 0.05em; }
+.rangee-etage { display: grid; grid-template-columns: 1fr 1fr 90px auto; gap: 8px; margin-bottom: 8px; align-items: end; }
+.discret { color: var(--discret); font-size: 12px; }
+.defilant { max-height: 340px; overflow-y: auto; }
+details { margin-top: 12px; }
+summary { cursor: pointer; color: var(--discret); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+<header>
+    <h1>ragscore</h1>
+    <p class="sous-titre">Mesurer un systeme RAG au lieu de l'affirmer bon. <span class="chemin" id="racine"></span></p>
+</header>
+
+<div class="grille">
+
+<section>
+    <h2>1. Jeu de questions</h2>
+    <div id="depot">
+        Deposez un fichier <strong>.jsonl</strong>, <strong>.csv</strong> ou <strong>.json</strong>,
+        ou cliquez pour le choisir.
+        <div class="discret" style="margin-top:6px">Colonnes reconnues : question, relevant_ids, must_include, must_not_include, category</div>
+    </div>
+    <input type="file" id="fichier" accept=".jsonl,.csv,.json" hidden>
+    <label for="jeu">Jeux enregistres</label>
+    <select id="jeu"></select>
+    <div id="avis-jeu"></div>
+    <div id="apercu"></div>
+</section>
+
+<section>
+    <h2>2. Systeme a mesurer</h2>
+    <label for="connecteur">Systemes enregistres</label>
+    <select id="connecteur"></select>
+
+    <label for="sorte">Sorte de systeme</label>
+    <select id="sorte">
+        <option value="http">API a brancher — mesure le produit que vous livrez</option>
+        <option value="vector">Moteur integre — mesure une approche, sans application</option>
+    </select>
+
+    <label for="nom">Nom</label>
+    <input id="nom" placeholder="mon assistant (local)">
+
+    <div id="formulaire-http">
+    <div class="rangee-etage" style="grid-template-columns: 90px 1fr 110px;">
+        <div>
+            <label for="methode">Methode</label>
+            <select id="methode"><option>POST</option><option>GET</option></select>
+        </div>
+        <div>
+            <label for="url">URL</label>
+            <input id="url" placeholder="http://127.0.0.1:3000/api/chat">
+        </div>
+        <div>
+            <label for="mode">Reponse</label>
+            <select id="mode"><option value="sse">flux SSE</option><option value="json">JSON</option></select>
+        </div>
+    </div>
+
+    <label for="corps">Corps de la requete <span class="discret">— {{question}} est remplace</span></label>
+    <textarea id="corps">{"question": "{{question}}"}</textarea>
+
+    <div class="rangee-etage" style="grid-template-columns: 1fr 1fr;">
+        <div>
+            <label for="texte-source" id="label-texte-source">Evenement du texte</label>
+            <input id="texte-source" value="text">
+        </div>
+        <div>
+            <label for="texte-champ">Champ du fragment</label>
+            <input id="texte-champ" value="delta">
+        </div>
+    </div>
+
+    <label>Etages de recuperation <span class="discret">— dans l'ordre applique par le systeme</span></label>
+    <div id="etages"></div>
+    <button id="ajouter-etage" type="button" style="margin-top:8px">Ajouter un etage</button>
+
+    <details>
+        <summary>Connexion prealable et consommation</summary>
+        <label for="auth-url">URL de connexion <span class="discret">— vide si aucune</span></label>
+        <input id="auth-url" placeholder="http://127.0.0.1:3000/api/auth/connexion">
+        <label for="auth-corps">Corps de la connexion <span class="discret">— utilisez {{env:NOM}}, jamais un mot de passe en clair</span></label>
+        <textarea id="auth-corps">{"email": "{{env:EVALUATION_EMAIL}}", "password": "{{env:EVALUATION_PASSWORD}}"}</textarea>
+        <label for="usage-source">Evenement ou chemin de la consommation</label>
+        <input id="usage-source" value="done">
+    </details>
+    </div>
+
+    <div id="formulaire-vector" hidden>
+        <label for="base-url">URL de la base vectorielle
+            <span class="discret">— utilisez {{env:NOM}}, une URL porte un mot de passe</span></label>
+        <input id="base-url" value="{{env:DATABASE_URL}}">
+
+        <div class="rangee-etage" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+            <div><label for="table">Table</label><input id="table" value="chunk"></div>
+            <div><label for="colonne-id">Colonne identifiant</label><input id="colonne-id" value="code"></div>
+            <div><label for="colonne-texte">Colonne texte</label><input id="colonne-texte" value="content"></div>
+            <div><label for="colonne-vecteur">Colonne vecteur</label><input id="colonne-vecteur" value="embedding"></div>
+        </div>
+
+        <div class="rangee-etage" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div><label for="limite">Candidats cherches</label><input id="limite" type="number" value="40"></div>
+            <div><label for="garde">Gardes apres rerank</label><input id="garde" type="number" value="8"></div>
+            <div><label for="passages">Passages envoyes</label><input id="passages" type="number" value="14"></div>
+        </div>
+
+        <div class="rangee-etage" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div><label for="modele-embed">Embeddings</label><input id="modele-embed" value="voyage-3.5"></div>
+            <div><label for="modele-rerank">Reclassement</label><input id="modele-rerank" value="rerank-2.5"></div>
+            <div><label for="modele-gen">Generation</label><input id="modele-gen" value="claude-sonnet-5"></div>
+        </div>
+
+        <label for="cle-voyage">Cles</label>
+        <div class="rangee-etage" style="grid-template-columns: 1fr 1fr;">
+            <div><input id="cle-voyage" value="{{env:VOYAGE_API_KEY}}"></div>
+            <div><input id="cle-anthropic" value="{{env:ANTHROPIC_API_KEY}}"></div>
+        </div>
+
+        <label for="invite">Consigne donnee au modele
+            <span class="discret">— elle decide du refus et de la citation, donc du score</span></label>
+        <textarea id="invite" style="min-height:96px"></textarea>
+
+        <div class="avis info" style="margin-top:14px">
+            Ce moteur mesure une approche, pas votre produit. Un rapport qui en sort ne doit pas
+            etre presente comme la mesure de l'application livree.
+        </div>
+    </div>
+
+    <div class="boutons">
+        <button id="enregistrer" type="button">Enregistrer</button>
+        <button id="tester" type="button">Tester sur une question</button>
+        <button id="supprimer" type="button">Supprimer</button>
+    </div>
+    <div id="avis-connecteur"></div>
+    <div id="resultat-test"></div>
+</section>
+
+</div>
+
+<section>
+    <h2>3. Mesure</h2>
+    <div class="boutons" style="margin-top:0">
+        <button id="lancer" class="principal" type="button">Lancer la mesure</button>
+        <button id="renoter" type="button">Renoter le dernier rapport</button>
+        <span class="discret" id="cout-estime"></span>
+    </div>
+    <div class="jauge"><div id="progression"></div></div>
+    <div class="discret" id="etat"></div>
+    <div id="avis-mesure"></div>
+    <div id="mesures" class="mesures"></div>
+    <div id="detail" class="defilant"></div>
+
+    <details id="bloc-rapports">
+        <summary>Rapports precedents</summary>
+        <div id="rapports"></div>
+    </details>
+</section>
+
+</div>
+<script src="/ui.js"></script>
+</body>
+</html>
